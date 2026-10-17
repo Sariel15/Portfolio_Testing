@@ -2,6 +2,8 @@
   import { links } from "~/data/header";
 
   const { fullName } = useAppConf();
+
+  console.log('fullName', fullName);
 </script>
 
 <template>
