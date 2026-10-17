@@ -13,8 +13,8 @@ export default defineNuxtConfig({
     apiSecret: "",
 
     public: {
-      githubUsername: process.env.NUXT_PUBLIC_GITHUB_USERNAME || "",
-      fullname: process.env.NUXT_PUBLIC_FULLNAME || "",
+      githubUsername: "",
+      fullname: "",
     },
   },
 
