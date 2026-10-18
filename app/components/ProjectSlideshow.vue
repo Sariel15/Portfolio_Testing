@@ -12,19 +12,40 @@
   }>();
 
   const activeIndex = ref(0);
+  const displayedIndex = ref(0);
 
   const hasScreenshots = computed(() => (props.screenshots?.length ?? 0) > 0);
 
-  const activeScreenshot = computed(
-    () => props.screenshots?.[activeIndex.value],
+  const displayedScreenshot = computed(
+    () => props.screenshots?.[displayedIndex.value],
   );
+
+  let preloadId = 0;
 
   watch(
     () => props.screenshots,
     () => {
       activeIndex.value = 0;
+      displayedIndex.value = 0;
     },
   );
+
+  watch(activeIndex, (index) => {
+    const screenshot = props.screenshots?.[index];
+    if (!screenshot) return;
+
+    const currentPreloadId = ++preloadId;
+    const image = new Image();
+    const displayWhenSettled = () => {
+      if (currentPreloadId === preloadId && activeIndex.value === index) {
+        displayedIndex.value = index;
+      }
+    };
+
+    image.onload = displayWhenSettled;
+    image.onerror = displayWhenSettled;
+    image.src = screenshot.src;
+  });
 
   function previous() {
     if (!props.screenshots?.length) return;
@@ -46,16 +67,25 @@
     v-if="hasScreenshots"
     class="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900"
   >
-    <div v-if="activeScreenshot">
-      <Transition name="slide-fade" mode="out-in">
-        <img
-          :key="activeScreenshot.src"
-          :src="activeScreenshot.src"
-          :alt="activeScreenshot.alt || `${title} screenshot`"
-          loading="lazy"
-          class="block h-auto w-full"
+    <div v-if="displayedScreenshot" class="relative">
+      <img
+        :key="displayedScreenshot.src"
+        :src="displayedScreenshot.src"
+        :alt="displayedScreenshot.alt || `${title} screenshot`"
+        class="block h-auto w-full"
+      />
+
+      <div
+        v-if="activeIndex !== displayedIndex"
+        role="status"
+        aria-label="Loading screenshot"
+        class="absolute inset-0 flex items-center justify-center bg-black/30"
+      >
+        <span
+          aria-hidden="true"
+          class="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-teal-300"
         />
-      </Transition>
+      </div>
     </div>
 
     <template v-if="screenshots!.length > 1">
@@ -102,29 +132,3 @@
     </template>
   </div>
 </template>
-
-<style scoped>
-  .slide-fade-enter-active,
-  .slide-fade-leave-active {
-    transition:
-      opacity 180ms ease,
-      transform 180ms ease;
-  }
-
-  .slide-fade-enter-from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-
-  .slide-fade-leave-to {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .slide-fade-enter-active,
-    .slide-fade-leave-active {
-      transition: none;
-    }
-  }
-</style>
