@@ -55,7 +55,7 @@
 
     <!-- Screenshots appear only when available -->
     <section v-if="project.screenshots?.length" class="mb-12">
-      <h2 class="mb-4 text-xl font-semibold text-white">Project Screenshots</h2>
+      <h2 class="mb-4 text-xl font-semibold text-white">Project Preview</h2>
 
       <ProjectSlideshow
         :screenshots="project.screenshots"
