@@ -46,14 +46,14 @@
     v-if="hasScreenshots"
     class="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900"
   >
-    <div v-if="activeScreenshot" class="aspect-16/10 overflow-hidden">
+    <div v-if="activeScreenshot">
       <Transition name="slide-fade" mode="out-in">
         <img
           :key="activeScreenshot.src"
           :src="activeScreenshot.src"
           :alt="activeScreenshot.alt || `${title} screenshot`"
           loading="lazy"
-          class="h-full w-full object-cover object-top"
+          class="block h-auto w-full"
         />
       </Transition>
     </div>
@@ -84,11 +84,11 @@
           type="button"
           :aria-label="`Show screenshot ${index + 1}`"
           :aria-current="index === activeIndex ? 'true' : undefined"
-          class="h-4 rounded-full transition-all duration-300"
+          class="h-4 rounded-full transition-all duration-300 cursor-pointer"
           :class="
             index === activeIndex
               ? 'w-8 bg-teal-300'
-              : 'w-4 bg-white/60 hover:bg-white'
+              : 'w-4 bg-gray-400 hover:bg-gray-700'
           "
           @click.prevent.stop="activeIndex = index"
         />
